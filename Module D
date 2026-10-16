@@ -1,0 +1,101 @@
+// ============================================================
+//  SMART CANTEEN OPTIMIZER
+//  MODULE D: Billing and Waiting Time
+//
+//  The full module has three functions:
+//    14. Calculate Bill          -> Total = Qty x Price for every item
+//    15. Estimate Waiting Time   -> Wait = sum of prep times of the
+//                                   orders ahead in the queue
+//    16. Display Order Status    -> Waiting / Preparing / Ready / Completed
+//
+//  This file contains functions 14 and 16 (with the helpers they need).
+//  Function 15 is described above but not included in this copy.
+// ============================================================
+#include <iostream>
+#include <iomanip>
+#include <map>
+#include <vector>
+#include <unordered_map>
+#include <string>
+#include <algorithm>
+using namespace std;
+
+// ---------------- Shared data (agreed with the team) ----------------
+enum Status { WAITING, PREPARING, READY, COMPLETED };
+
+struct Item {
+    string id, name;
+    int price;                // Rs.
+};
+
+struct Order {
+    int tokenId;
+    int studentId;
+    map<string, int> lines;   // item ID -> quantity
+    int total;                // Rs.
+    Status status;
+};
+
+// The full menu is maintained in the menu module
+vector<Item> menu;
+
+unordered_map<string, int> menuIndex;   // item ID -> position in menu (O(1) lookup)
+unordered_map<int, Order> allOrders;    // token ID -> order details + status
+int nextToken = 1;
+
+// ---------------- Helpers ----------------
+void buildIndex() {
+    for (int i = 0; i < (int)menu.size(); i++) menuIndex[menu[i].id] = i;
+}
+
+// Finds an item by ID (case-insensitive). Returns nullptr if not found.
+Item* findItem(string id) {
+    transform(id.begin(), id.end(), id.begin(), ::toupper);
+    auto it = menuIndex.find(id);
+    return it == menuIndex.end() ? nullptr : &menu[it->second];
+}
+
+string statusToString(Status s) {
+    switch (s) {
+        case WAITING:   return "Waiting";
+        case PREPARING: return "Preparing";
+        case READY:     return "Ready";
+        case COMPLETED: return "Completed";
+    }
+    return "Unknown";
+}
+
+// ============================================================
+//  14. CALCULATE BILL        Total = Qty x Price (for each item)
+// ============================================================
+int calculateBill(const map<string, int>& lines) {
+    int total = 0;
+    for (auto& l : lines)
+        total += findItem(l.first)->price * l.second;
+    return total;
+}
+
+// Prints the itemised bill for an order
+void printBill(const Order& o) {
+    cout << "\n========== BILL (Token " << o.tokenId << ") ==========\n";
+    cout << left << setw(5) << "ID" << setw(24) << "Item" << setw(5) << "Qty"
+         << setw(8) << "Price" << "Total\n";
+    for (auto& l : o.lines) {
+        Item* it = findItem(l.first);
+        cout << left << setw(5) << it->id << setw(24) << it->name << setw(5) << l.second
+             << setw(8) << it->price << it->price * l.second << "\n";
+    }
+    cout << string(46, '-') << "\n";
+    cout << "GRAND TOTAL (Rs.): " << o.total << "\n";
+}
+
+// ============================================================
+//  16. DISPLAY ORDER STATUS   (Waiting / Preparing / Ready / Completed)
+// ============================================================
+void displayOrderStatus(int tokenId) {
+    auto it = allOrders.find(tokenId);
+    if (it == allOrders.end()) { cout << "Token not found.\n"; return; }
+
+    cout << "Token " << tokenId << " status: "
+         << statusToString(it->second.status) << "\n";
+}
