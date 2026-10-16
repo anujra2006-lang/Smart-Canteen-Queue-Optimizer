@@ -1,7 +1,6 @@
 // ============================================================
-// ORDER QUEUE MODULE  (Module B: items 5-8)
+// ORDER QUEUE MODULE  (Module B)
 //   5. Add Order (Enqueue)
-//   6. View Pending Orders
 //   7. Process Next Order (Dequeue)
 //   8. Complete Order
 //
@@ -10,8 +9,7 @@
 //
 // HOW TO CONNECT WITH OTHER MODULES
 //   - Place order screen  : call  orders.addOrder(studentId, items)
-//   - Staff screen        : call  orders.viewPendingOrders(),
-//                                 orders.processNextOrder(),
+//   - Staff screen        : call  orders.processNextOrder(),
 //                                 orders.completeOrder(token)
 //   - Or just call        : orders.runMenu()   (ready-made console menu)
 //   Names are prefixed (QueueOrder, OrderItem) so they will not clash
@@ -83,23 +81,6 @@ public:
         order.status = "Pending";
         pending.push(order);
         return order.token;
-    }
-
-    // ---------- 6. View Pending Orders ----------
-    // Shows every waiting order (front of the queue first).
-    void viewPendingOrders() const {
-        std::cout << "\n--- Pending Orders ---\n";
-        if (pending.empty()) {
-            std::cout << "No pending orders.\n";
-            return;
-        }
-        std::queue<QueueOrder> copy = pending; // copy so the real queue is untouched
-        int position = 1;
-        while (!copy.empty()) {
-            std::cout << "[" << position++ << "] ";
-            printOrder(copy.front());
-            copy.pop();
-        }
     }
 
     // ---------- 7. Process Next Order (Dequeue) ----------
@@ -208,9 +189,8 @@ public:
         while (true) {
             std::cout << "\n========== ORDER QUEUE ==========\n"
                       << "1. Add order\n"
-                      << "2. View pending orders\n"
-                      << "3. Process next order\n"
-                      << "4. Complete order\n"
+                      << "2. Process next order\n"
+                      << "3. Complete order\n"
                       << "0. Back\n"
                       << "Choose an option: ";
             int choice;
@@ -223,9 +203,8 @@ public:
             clearInput();
             switch (choice) {
                 case 1: addOrderInteractive(); break;
-                case 2: viewPendingOrders(); break;
-                case 3: processNextInteractive(); break;
-                case 4: completeInteractive(); break;
+                case 2: processNextInteractive(); break;
+                case 3: completeInteractive(); break;
                 case 0: return;
                 default: std::cout << "Invalid option.\n";
             }
