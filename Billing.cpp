@@ -56,7 +56,7 @@ int calculateBill(const map<string, int>& lines) {
 }
 
 void printBill(const Order& o) {
-    cout << "\n========== BILL (Token " << o.tokenId << ") ==========\n";
+    cout << "\n BILL (Token " << o.tokenId << ") \n";
     cout << left << setw(5) << "ID" << setw(24) << "Item" << setw(5) << "Qty"
          << setw(8) << "Price" << "Total\n";
     for (auto& l : o.lines) {
