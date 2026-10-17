@@ -159,22 +159,22 @@ void changeStock() {
 
 int main() {
     loadMenu();
-    int choice;
-    do {
-        cout << "\n1. Menu\n2. Place order\n3. Pending orders\n"
-             << "4. Start next order\n5. Mark ready\n6. Mark completed\n"
-             << "7. Order status\n8. Update stock\n0. Exit\n";
-        choice = readNumber("Choice: ", 0, 8);
+//     int choice;
+//     do {
+//         cout << "\n1. Menu\n2. Place order\n3. Pending orders\n"
+//              << "4. Start next order\n5. Mark ready\n6. Mark completed\n"
+//              << "7. Order status\n8. Update stock\n0. Exit\n";
+//         choice = readNumber("Choice: ", 0, 8);
 
-        if (choice == 1) showFoodMenu();
-        else if (choice == 2) placeOrder();
-        else if (choice == 3) chefQueue.viewPendingOrders();
-        else if (choice == 4) startNextOrder();
-        else if (choice == 5) markReady();
-        else if (choice == 6) markCompleted();
-        else if (choice == 7) checkStatus();
-        else if (choice == 8) changeStock();
-    } while (choice != 0);
+//         if (choice == 1) showFoodMenu();
+//         else if (choice == 2) placeOrder();
+//         else if (choice == 3) chefQueue.viewPendingOrders();
+//         else if (choice == 4) startNextOrder();
+//         else if (choice == 5) markReady();
+//         else if (choice == 6) markCompleted();
+//         else if (choice == 7) checkStatus();
+//         else if (choice == 8) changeStock();
+//     } while (choice != 0);
 
-    return 0;
-}
+//     return 0;
+// }
