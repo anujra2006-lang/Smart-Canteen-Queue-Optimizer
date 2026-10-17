@@ -1,21 +1,3 @@
-// ============================================================
-// ORDER QUEUE MODULE  (Module B)
-//   5. Add Order (Enqueue)
-//   7. Process Next Order (Dequeue)
-//   8. Complete Order
-//
-// Header-only, depends only on the C++ standard library.
-// Uses std::queue<QueueOrder> for the pending queue.
-//
-// HOW TO CONNECT WITH OTHER MODULES
-//   - Place order screen  : call  orders.addOrder(studentId, items)
-//   - Staff screen        : call  orders.processNextOrder(),
-//                                 orders.completeOrder(token)
-//   - Or just call        : orders.runMenu()   (ready-made console menu)
-//   Names are prefixed (QueueOrder, OrderItem) so they will not clash
-//   with an "Order" struct written by someone else.
-// ============================================================
-
 #include <iostream>
 #include <iomanip>
 #include <limits>
@@ -24,8 +6,7 @@
 #include <string>
 #include <vector>
 
-// One line of an order, e.g. 2 x Samosa.
-// menuId can be linked to the Menu module; use 0 if not known.
+
 struct OrderItem {
     int menuId{0};
     std::string name;
@@ -33,17 +14,17 @@ struct OrderItem {
 };
 
 struct QueueOrder {
-    int token{0};                 // token number shown to the student
+    int token{0};                 
     std::string studentId;
     std::vector<OrderItem> items;
-    std::string status{"Pending"}; // Pending -> Processing -> Completed
+    std::string status{"Pending"}; 
 };
 
 class OrderQueue {
 private:
-    std::queue<QueueOrder> pending;        // waiting orders (FIFO)
-    std::vector<QueueOrder> processing;    // dequeued, being prepared
-    std::vector<QueueOrder> completed;     // finished orders
+    std::queue<QueueOrder> pending;        
+    std::vector<QueueOrder> processing;    
+    std::vector<QueueOrder> completed;     
     int nextToken = 1;
 
     static std::string tokenText(int token) {
@@ -66,9 +47,7 @@ private:
     }
 
 public:
-    // ---------- 5. Add Order (Enqueue) ----------
-    // Adds a new order to the rear of the queue.
-    // Returns the token number, or -1 if the order is invalid.
+
     int addOrder(const std::string& studentId, const std::vector<OrderItem>& items) {
         if (studentId.empty() || items.empty()) return -1;
         for (const auto& item : items)
@@ -83,9 +62,7 @@ public:
         return order.token;
     }
 
-    // ---------- 7. Process Next Order (Dequeue) ----------
-    // Takes the front order out of the pending queue and starts processing it.
-    // Returns false if the queue is empty. 'out' (optional) receives the order.
+    
     bool processNextOrder(QueueOrder* out = nullptr) {
         if (pending.empty()) return false;
         QueueOrder order = pending.front();
@@ -96,9 +73,7 @@ public:
         return true;
     }
 
-    // ---------- 8. Complete Order ----------
-    // Marks a processing order as completed and shows its token for collection.
-    // Returns false if no processing order has that token.
+ 
     bool completeOrder(int token) {
         for (size_t i = 0; i < processing.size(); ++i) {
             if (processing[i].token == token) {
@@ -116,13 +91,12 @@ public:
         return false;
     }
 
-    // ---------- Helpers for other modules ----------
     bool hasPending() const { return !pending.empty(); }
     size_t pendingCount() const { return pending.size(); }
     const std::vector<QueueOrder>& processingOrders() const { return processing; }
     const std::vector<QueueOrder>& completedOrders() const { return completed; }
 
-    // ---------- Console UI ----------
+    
     void addOrderInteractive() {
         std::string studentId;
         std::cout << "Student ID: ";
@@ -184,7 +158,7 @@ public:
         if (!completeOrder(token)) std::cout << "No processing order with that token.\n";
     }
 
-    // Ready-made menu. Call from main() or from the main menu of the full system.
+   
     void runMenu() {
         while (true) {
             std::cout << "\n========== ORDER QUEUE ==========\n"
