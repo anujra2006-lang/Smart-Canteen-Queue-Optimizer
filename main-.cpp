@@ -1,13 +1,3 @@
-// ==================================================================
-//  SMART CANTEEN OPTIMIZER - integration / console UI
-//
-//  Compile only this file (it includes the three modules):
-//      g++ main.cpp -o canteen
-//  Keep billing.h, inventory.h, orderqueue.h and inventory.txt
-//  together. The program finds inventory.txt in the current folder,
-//  the parent folder, or the folder of the exe, so it works from
-//  either pbl or pbl\output.
-// ==================================================================
 #include <iostream>
 #include <iomanip>
 #include <fstream>
@@ -26,10 +16,6 @@ using namespace std;
 
 OrderQueue chefQueue;
 
-// ---------------------------------------------------------------
-//  Input helpers (everything is read line by line, so "2abc" or
-//  "1.5" is rejected instead of leaving junk in the input).
-// ---------------------------------------------------------------
 string trim(const string& s) {
     size_t a = 0, b = s.size();
     while (a < b && isspace((unsigned char)s[a])) a++;
@@ -84,9 +70,6 @@ string tokenLabel(int token) {
     return o.str();
 }
 
-// ---------------------------------------------------------------
-//  Menu loading (from inventory.txt)
-// ---------------------------------------------------------------
 void loadMenu(bool verbose = false) {
     menu.clear();
     menuIndex.clear();
@@ -120,9 +103,6 @@ void loadMenu(bool verbose = false) {
         cout << "WARNING: " << skipped << " line(s) in the inventory file could not be read and were skipped.\n";
 }
 
-// ---------------------------------------------------------------
-//  Saving / loading orders (orders.txt, kept next to inventory.txt)
-// ---------------------------------------------------------------
 void saveOrders() {
     vector<int> tokens;
     for (auto& p : allOrders) tokens.push_back(p.first);
@@ -178,7 +158,7 @@ void loadOrders() {
             oi.wtime = it->wtime;
             q.items.push_back(oi);
         }
-        chefQueue.reserveToken(o.tokenId);      // never reuse a token number
+        chefQueue.reserveToken(o.tokenId);      
         if (!ok) { skipped++; continue; }
         o.status = (Status)st;
         allOrders[o.tokenId] = o;
@@ -190,11 +170,9 @@ void loadOrders() {
         cout << "WARNING: " << skipped << " saved order(s) could not be restored.\n";
 }
 
-// ---------------------------------------------------------------
-//  Menu options
-// ---------------------------------------------------------------
+ 
 void showFoodMenu() {
-    loadMenu();                         // pick up any change made to inventory.txt
+    loadMenu();                         
     cout << "\nMENU\n";
     cout << left << setw(6) << "ID" << setw(22) << "Item" << setw(10) << "Price" << "Stock\n";
     for (size_t i = 0; i < menu.size(); i++) {
@@ -241,7 +219,6 @@ void placeOrder() {
         return;
     }
 
-    // 1) take the stock first; if anything fails, put everything back
     vector<pair<string, int> > taken;
     bool ok = true;
     for (map<string, int>::iterator it = order.lines.begin(); it != order.lines.end(); it++) {
@@ -254,7 +231,6 @@ void placeOrder() {
         return;
     }
 
-    // 2) create the queue entry
     vector<OrderItem> items;
     for (map<string, int>::iterator it = order.lines.begin(); it != order.lines.end(); it++) {
         Item* mi = findItem(it->first);
