@@ -17,7 +17,7 @@ string invUpper(string s) {
 }
 
 bool invFileExists(const string& path) {
-    ifstream f(path.c_str());
+    ifstream f(path);
     return f.is_open();
 }
 
