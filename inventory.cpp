@@ -33,23 +33,7 @@ string dataPath(const string& name) {
 }
 
 
-void locateInventory(const string& argv0) {
-    vector<string> candidates;
-    candidates.push_back("inventory.txt");
-    candidates.push_back("../inventory.txt");
-    string dir = invDirOf(argv0);
-    if (!dir.empty()) {
-        candidates.push_back(dir + "inventory.txt");
-        candidates.push_back(dir + "../inventory.txt");
-    }
-    for (size_t i = 0; i < candidates.size(); i++) {
-        if (invFileExists(candidates[i])) {
-            inventoryPath = candidates[i];
-            return;
-        }
-    }
-    inventoryPath = "inventory.txt";
-}
+
 
 const char* DEFAULT_INVENTORY =
     "M01 VegThali 90 25 8\n"
