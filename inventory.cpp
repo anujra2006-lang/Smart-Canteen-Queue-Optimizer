@@ -33,9 +33,6 @@ string dataPath(const string& name) {
     return invDirOf(inventoryPath) + name;
 }
 
-
-
-
 const char* DEFAULT_INVENTORY =
     "M01 VegThali 90 25 8\n"
     "M02 RajmaChawal 70 25 6\n"
