@@ -6,32 +6,23 @@
 #include <cstdio>
 #include <cctype>
 using namespace std;
-
-
 string inventoryPath = "inventory.txt";
-
 string invUpper(string s) {
     for (size_t i = 0; i < s.size(); i++)
         s[i] = (char)toupper((unsigned char)s[i]);
     return s;
 }
-
 bool invFileExists(const string& path) {
     ifstream f(path);
     return f.is_open();
 }
-
-
 string invDirOf(const string& path) {
     size_t pos = path.find_last_of("/\\");
     return pos == string::npos ? "" : path.substr(0, pos + 1);
 }
-
-
 string dataPath(const string& name) {
     return invDirOf(inventoryPath) + name;
 }
-
 const char* DEFAULT_INVENTORY =
     "M01 VegThali 90 25 8\n"
     "M02 RajmaChawal 70 25 6\n"
@@ -78,7 +69,6 @@ const char* DEFAULT_INVENTORY =
     "S13 GarlicBread 45 30 5\n"
     "S14 ChilliPotato 60 30 7\n"
     "S15 Dhokla 35 30 2\n";
-
 void ensureInventoryFile() {
     if (invFileExists(inventoryPath)) return;
     ofstream out(inventoryPath.c_str());
@@ -89,10 +79,8 @@ void ensureInventoryFile() {
              << inventoryPath << "\n";
     }
 }
-
-
 bool parseInvLine(const string& line, string& id, string& name,
-                  double& price, int& quantity, int& wtime) {
+    double& price, int& quantity, int& wtime) {
     istringstream in(line);
     vector<string> t;
     string w;
@@ -115,8 +103,6 @@ bool parseInvLine(const string& line, string& id, string& name,
     for (size_t i = 2; i + 3 < n; i++) name += " " + t[i];
     return true;
 }
-
-
 bool saveInventoryLines(const vector<string>& lines) {
     string tmp = inventoryPath + ".tmp";
     {
@@ -146,8 +132,6 @@ bool saveInventoryLines(const vector<string>& lines) {
     }
     return true;
 }
-
-
 bool updateStock(string id, int change, bool verbose = true) {
     id = invUpper(id);
     ifstream file(inventoryPath.c_str());
@@ -158,7 +142,6 @@ bool updateStock(string id, int change, bool verbose = true) {
     vector<string> lines;
     string line;
     bool found = false, enough = true;
-
     while (getline(file, line)) {
         if (!line.empty() && line[line.size() - 1] == '\r') line.erase(line.size() - 1);
         string fid, name;
@@ -179,7 +162,6 @@ bool updateStock(string id, int change, bool verbose = true) {
         lines.push_back(line);
     }
     file.close();
-
     if (!found) {
         cout << "Food ID not found!\n";
         return false;
@@ -193,8 +175,6 @@ bool updateStock(string id, int change, bool verbose = true) {
         cout << "Stock updated successfully!\n";
     return true;
 }
-
-
 int getStock(string id) {
     id = invUpper(id);
     ifstream file(inventoryPath.c_str());
@@ -214,20 +194,17 @@ bool checkAvailability(string id, int required) {
     int stock = getStock(id);
     return stock >= 0 && stock >= required;
 }
-
 int main(int argc, char* argv[]) {
     locateInventory(argc > 0 ? argv[0] : "");
     ensureInventoryFile();
     int choice, quantity, change;
     string id;
-
     do {
         cout << "\n     INVENTORY MANAGEMENT\n";
         cout << "1. Update Stock\n";
         cout << "2. Check Availability\n";
         cout << "0. Exit\n";
         cout << "Enter choice: ";
-
         if (!(cin >> choice)) {
             cout << "Invalid input!\n";
             break;
@@ -267,4 +244,3 @@ int main(int argc, char* argv[]) {
     } while (choice != 0);
     return 0;
 }
- 
