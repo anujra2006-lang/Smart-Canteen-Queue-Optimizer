@@ -7,34 +7,29 @@
 #include <vector>
 #include <cstddef>
 using namespace std;
-
 struct OrderItem {
     int menuId{0};
     string name;
     int quantity{1};
     int wtime{0};
 };
-
 struct QueueOrder {
     int token{0};
     string studentId;
     vector<OrderItem> items;
     string status{"Pending"};
 };
-
 class OrderQueue {
 private:
     deque<QueueOrder> pending;
     vector<QueueOrder> processing;
     vector<QueueOrder> completed;
     int nextToken = 1;
-
     static string tokenText(int token) {
         ostringstream out;
         out << "T" << setfill('0') << setw(3) << token;
         return out.str();
     }
-
     static void printOrder(const QueueOrder& o) {
         cout << "Token " << tokenText(o.token)
                   << " | Student ID: " << o.studentId
@@ -42,14 +37,12 @@ private:
         for (const auto& item : o.items)
             cout << "     - " << item.quantity << " x " << item.name << "\n";
     }
-
     static int orderTime(const QueueOrder& o) {
         int total = 0;
         for (const auto& item : o.items)
             total += item.wtime * item.quantity;
         return total;
     }
-
     static bool reduceIn(QueueOrder& o, const string& name, int amount) {
         for (size_t i = 0; i < o.items.size(); ++i) {
             if (o.items[i].name != name) continue;
@@ -61,19 +54,15 @@ private:
         }
         return false;
     }
-
     static void clearInput() {
         cin.clear();
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
     }
-
 public:
-
     int addOrder(const string& studentId, const vector<OrderItem>& items) {
         if (studentId.empty() || items.empty()) return -1;
         for (const auto& item : items)
             if (item.name.empty() || item.quantity <= 0) return -1;
-
         QueueOrder order;
         order.token = nextToken++;
         order.studentId = studentId;
@@ -82,7 +71,6 @@ public:
         pending.push_back(order);
         return order.token;
     }
-
     bool processNextOrder(QueueOrder* out = nullptr) {
         if (pending.empty()) return false;
         QueueOrder order = pending.front();
@@ -92,7 +80,6 @@ public:
         if (out) *out = order;
         return true;
     }
-
     bool completeOrder(int token) {
         for (size_t i = 0; i < processing.size(); ++i) {
             if (processing[i].token == token) {
@@ -109,7 +96,6 @@ public:
         }
         return false;
     }
-
     void viewPendingOrders() const {
         if (pending.empty()) {
             cout << "No pending orders.\n";
@@ -123,7 +109,6 @@ public:
             cout << "     Estimated waiting time: " << running << " min\n";
         }
     }
-
     int waitingTime(int token) const {
         int total = 0;
         for (const auto& o : pending) {
@@ -132,7 +117,6 @@ public:
         }
         return -1;
     }
-
     bool reduceItem(int token, const string& name, int amount) {
         for (auto& o : pending)
             if (o.token == token) return reduceIn(o, name, amount);
@@ -140,8 +124,6 @@ public:
             if (o.token == token) return reduceIn(o, name, amount);
         return false;
     }
-
-    // Remove a still-pending order (used for cancelling).
     bool cancelOrder(int token) {
         for (size_t i = 0; i < pending.size(); ++i) {
             if (pending[i].token == token) {
@@ -151,8 +133,6 @@ public:
         }
         return false;
     }
-
-    // Put a saved order back into the queue (where: 0 pending, 1 processing, 2 completed).
     void restoreOrder(const QueueOrder& o, int where) {
         QueueOrder c = o;
         if (where == 0)      { c.status = "Pending";    pending.push_back(c); }
@@ -160,30 +140,24 @@ public:
         else                 { c.status = "Completed";  completed.push_back(c); }
         reserveToken(c.token);
     }
-
-    // Make sure this token number is never handed out again.
     void reserveToken(int token) {
         if (token >= nextToken) nextToken = token + 1;
     }
-
     bool hasPending() const { return !pending.empty(); }
     size_t pendingCount() const { return pending.size(); }
     const vector<QueueOrder>& processingOrders() const { return processing; }
     const vector<QueueOrder>& completedOrders() const { return completed; }
-
     void addOrderInteractive() {
         string studentId;
         cout << "Student ID: ";
         cin >> studentId;
         clearInput();
-
         vector<OrderItem> items;
         while (true) {
             string name;
             cout << "Item name (blank to finish): ";
             getline(cin, name);
             if (name.empty()) break;
-
             int qty;
             cout << "Quantity: ";
             if (!(cin >> qty) || qty <= 0) {
@@ -202,7 +176,6 @@ public:
         if (token < 0) cout << "Order not created (needs a student ID and at least one item).\n";
         else cout << "Order added. Your token number is " << tokenText(token) << "\n";
     }
-
     void processNextInteractive() {
         QueueOrder order;
         if (!processNextOrder(&order)) {
@@ -212,7 +185,6 @@ public:
         cout << "\nNow processing:\n";
         printOrder(order);
     }
-
     void completeInteractive() {
         if (processing.empty()) {
             cout << "No orders are currently being processed.\n";
@@ -231,7 +203,6 @@ public:
         clearInput();
         if (!completeOrder(token)) cout << "No processing order with that token.\n";
     }
-
     void runMenu() {
         while (true) {
             cout << "\nORDER QUEUE\n"
