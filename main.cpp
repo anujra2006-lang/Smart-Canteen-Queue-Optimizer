@@ -10,11 +10,17 @@
 #include <cstdlib>
 using namespace std;
 
+
+
+
+
 #include "billing.cpp"
 #include "orderqueuef.cpp"
 #include "inventory.cpp"
 
 OrderQueue chefQueue;
+
+
 
 
 string trim(const string& s) {
@@ -23,6 +29,11 @@ string trim(const string& s) {
     while (b > a && isspace((unsigned char)s[b - 1])) b--;
     return s.substr(a, b - a);
 }
+
+
+
+
+
 
 string readLine() {
     string s;
@@ -53,6 +64,10 @@ int readNumber(string message, int low, int high) {
     return n;
 }
 
+
+
+
+
 string readItemId() {
     string id;
     while (true) {
@@ -80,6 +95,12 @@ void loadMenu(bool verbose = false) {
         cout << "WARNING: could not open " << inventoryPath << " (is the folder writable?).\n";
         return;
     }
+
+
+
+
+
+    
     string line;
     int skipped = 0;
     while (getline(file, line)) {
@@ -99,6 +120,7 @@ void loadMenu(bool verbose = false) {
         menu.push_back(item);
     }
     file.close();
+    
     buildIndex();
     if (verbose && skipped > 0)
         cout << "WARNING: " << skipped << " line(s) in the inventory file could not be read and were skipped.\n";
@@ -122,6 +144,10 @@ void saveOrders() {
         out << "\n";
     }
 }
+
+
+
+
 
 void loadOrders() {
     ifstream in(dataPath("orders.txt").c_str());
@@ -185,6 +211,11 @@ void showFoodMenu() {
     }
 }
 
+
+
+
+
+
 void placeOrder() {
     loadMenu();
     if (menu.empty()) {
@@ -231,6 +262,10 @@ void placeOrder() {
         return;
     }
 
+
+
+
+    
    
     vector<OrderItem> items;
     for (map<string, int>::iterator it = order.lines.begin(); it != order.lines.end(); it++) {
@@ -258,6 +293,10 @@ void placeOrder() {
     cout << "Your token number: " << token << "\n";
     cout << "Estimated waiting time: " << chefQueue.waitingTime(token) << " minutes\n";
 }
+
+
+
+
 
 void startNext() {
     QueueOrder next;
@@ -302,6 +341,10 @@ void markCompleted() {
     }
 }
 
+
+
+
+
 void viewKitchenOrders() {
     const vector<QueueOrder>& list = chefQueue.processingOrders();
     if (list.empty()) {
@@ -330,6 +373,10 @@ void checkStatus() {
         cout << "Estimated waiting time: " << wait << " minutes\n";
     printBill(allOrders[token]);
 }
+
+
+
+
 
 void estimatedWait() {
     int token = readNumber("Token number: ", 1, 999999);
@@ -369,6 +416,11 @@ void adjustQuantity() {
              << statusToString(order.status) << ")\n";
         return;
     }
+
+
+
+
+    
     printBill(order);
 
     string id = readItemId();
@@ -398,6 +450,11 @@ void adjustQuantity() {
     cout << "Order updated\n";
     printBill(order);
 }
+
+
+
+
+
 
 void cancelWholeOrder() {
     int token = readNumber("Token number: ", 1, 999999);
@@ -446,6 +503,10 @@ int main(int argc, char* argv[]) {
              << "12. View orders being prepared / ready (chef)\n"
              << " 0. Exit\n";
         choice = readNumber("Choice: ", 0, 12);
+
+
+
+        
 
         if (choice == 1) showFoodMenu();
         else if (choice == 2) placeOrder();
