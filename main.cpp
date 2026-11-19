@@ -9,10 +9,17 @@
 #include <cctype>
 #include <cstdlib>
 using namespace std;
+
+
+
 #include "billing.cpp"
 #include "orderqueuef.cpp"
 #include "inventory.cpp"
+
+
+
 OrderQueue chefQueue;
+
 string trim(const string& s) {
     size_t a = 0, b = s.size();
     while (a < b && isspace((unsigned char)s[a])) a++;
@@ -266,6 +273,9 @@ void markReady() {
     saveOrders();
     cout << "Token " << token << " is ready\n";
 }
+
+
+
 void markCompleted() {
     int token = readNumber("Token number: ", 1, 999999);
     auto found = allOrders.find(token);
@@ -273,6 +283,9 @@ void markCompleted() {
         cout << "Token not found or not ready\n";
         return;
     }
+
+
+    
     if (chefQueue.completeOrder(token)) {
         found->second.status = COMPLETED;
         saveOrders();
@@ -280,12 +293,18 @@ void markCompleted() {
         cout << "Queue has no processing order with this token\n";
     }
 }
+
+
+
 void viewKitchenOrders() {
     const vector<QueueOrder>& list = chefQueue.processingOrders();
     if (list.empty()) {
         cout << "No orders are being prepared or waiting for pickup.\n";
         return;
     }
+
+
+    
     cout << "\nBeing prepared / ready for pickup:\n";
     for (size_t i = 0; i < list.size(); i++) {
         cout << "Token " << tokenLabel(list[i].token)
@@ -295,6 +314,9 @@ void viewKitchenOrders() {
             cout << "     - " << list[i].items[k].quantity << " x " << list[i].items[k].name << "\n";
     }
 }
+
+
+
 void checkStatus() {
     int token = readNumber("Token number: ", 1, 999999);
     if (allOrders.count(token) == 0) {
@@ -307,6 +329,10 @@ void checkStatus() {
         cout << "Estimated waiting time: " << wait << " minutes\n";
     printBill(allOrders[token]);
 }
+
+
+
+
 void estimatedWait() {
     int token = readNumber("Token number: ", 1, 999999);
     auto found = allOrders.find(token);
@@ -314,6 +340,10 @@ void estimatedWait() {
         cout << "Token not found\n";
         return;
     }
+
+
+
+    
     Status s = found->second.status;
     if (s == WAITING)
         cout << "Estimated waiting time: " << chefQueue.waitingTime(token) << " minutes\n";
@@ -324,12 +354,19 @@ void estimatedWait() {
     else
         cout << "This order is " << statusToString(s) << ".\n";
 }
+
+
+
+
 void changeStock() {
     string id = readItemId();
     if (id == "0") return;
     int change = readNumber("Change in stock (+ add, - remove): ", -10000, 10000);
     updateStock(id, change);
 }
+
+
+
 void adjustQuantity() {
     int token = readNumber("Token number: ", 1, 999999);
     auto found = allOrders.find(token);
@@ -337,6 +374,9 @@ void adjustQuantity() {
         cout << "Token not found\n";
         return;
     }
+
+
+    
     Order& order = found->second;
     if (order.status != WAITING) {
         cout << "Only orders that have not been started can be changed (this one is "
