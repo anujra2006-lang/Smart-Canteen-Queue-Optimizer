@@ -6,15 +6,12 @@
 #include <string>
 #include <cctype>
 using namespace std;
-
 enum Status { WAITING, PREPARING, READY, COMPLETED, CANCELLED };
-
 struct Item {
     string id, name;
     int price;
     int wtime;
 };
-
 struct Order {
     int tokenId;
     int studentId;
@@ -22,7 +19,6 @@ struct Order {
     int total;
     Status status;
 };
-
 vector<Item> menu = {
     {"M01", "Veg Thali",      90, 8},
     {"M02", "Rajma Chawal",   70, 6},
@@ -31,16 +27,13 @@ vector<Item> menu = {
     {"B03", "Cold Coffee",    40, 4},
     {"S01", "Samosa (2 pcs)", 25, 3},
 };
-
 unordered_map<string, int> menuIndex;
 unordered_map<int, Order> allOrders;
 int nextToken = 1;
-
 void buildIndex() {
     menuIndex.clear();
     for (int i = 0; i < (int)menu.size(); i++) menuIndex[menu[i].id] = i;
 }
-
 Item* findItem(string id) {
     for (size_t i = 0; i < id.size(); i++)
         id[i] = (char)toupper((unsigned char)id[i]);
@@ -58,7 +51,6 @@ string statusToString(Status s) {
     }
     return "Unknown";
 }
-
 int calculateBill(const map<string, int>& lines) {
     int total = 0;
     for (auto& l : lines) {
@@ -68,7 +60,6 @@ int calculateBill(const map<string, int>& lines) {
     }
     return total;
 }
-
 void printBill(const Order& o) {
     cout << "\nBILL (Token " << o.tokenId << ")\n";
     cout << left << setw(6) << "ID" << setw(22) << "Item" << setw(6) << "Qty"
@@ -82,7 +73,6 @@ void printBill(const Order& o) {
     cout << string(48, '-') << "\n";
     cout << "GRAND TOTAL (Rs.): " << o.total << "\n";
 }
-
 void displayOrderStatus(int tokenId) {
     auto it = allOrders.find(tokenId);
     if (it == allOrders.end()) { cout << "Token not found.\n"; return; }
@@ -90,12 +80,10 @@ void displayOrderStatus(int tokenId) {
     cout << "Token " << tokenId << " status: "
          << statusToString(it->second.status) << "\n";
 }
-
 void demoPlaceOrder() {
     Order o;
     cout << "Student ID: ";
     if (!(cin >> o.studentId)) { cin.clear(); cin.ignore(1000, '\n'); cout << "Invalid ID.\n"; return; }
-
     cout << "Menu:\n";
     for (auto& m : menu)
         cout << "  " << m.id << "  " << m.name << "  Rs." << m.price << "\n";
@@ -113,7 +101,6 @@ void demoPlaceOrder() {
         if (qty > 0) o.lines[it->id] += qty;
     }
     if (o.lines.empty()) { cout << "No items selected.\n"; return; }
-
     o.tokenId = nextToken++;
     o.total = calculateBill(o.lines);
     o.status = WAITING;
@@ -122,14 +109,12 @@ void demoPlaceOrder() {
     printBill(o);
     cout << "Your token: " << o.tokenId << "\n";
 }
-
 void demoSetStatus(int tokenId, Status s) {
     auto it = allOrders.find(tokenId);
     if (it == allOrders.end()) { cout << "Token not found.\n"; return; }
     it->second.status = s;
     cout << "Token " << tokenId << " is now " << statusToString(s) << ".\n";
 }
-
 int main() {
     buildIndex();
     int choice, token;
