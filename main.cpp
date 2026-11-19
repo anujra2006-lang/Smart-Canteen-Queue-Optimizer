@@ -9,28 +9,16 @@
 #include <cctype>
 #include <cstdlib>
 using namespace std;
-
-
 #include "billing.cpp"
 #include "orderqueuef.cpp"
 #include "inventory.cpp"
-
 OrderQueue chefQueue;
-
-
-
 string trim(const string& s) {
     size_t a = 0, b = s.size();
     while (a < b && isspace((unsigned char)s[a])) a++;
     while (b > a && isspace((unsigned char)s[b - 1])) b--;
     return s.substr(a, b - a);
 }
-
-
-
-
-
-
 string readLine() {
     string s;
     if (!getline(cin, s)) {
@@ -39,7 +27,6 @@ string readLine() {
     }
     return trim(s);
 }
-
 bool parseInt(const string& s, int& out) {
     if (s.empty() || s.size() > 10) return false;
     size_t i = (s[0] == '-' || s[0] == '+') ? 1 : 0;
@@ -51,7 +38,6 @@ bool parseInt(const string& s, int& out) {
     out = (int)v;
     return true;
 }
-
 int readNumber(string message, int low, int high) {
     cout << message;
     int n = 0;
@@ -59,11 +45,6 @@ int readNumber(string message, int low, int high) {
         cout << "Invalid input, try again: ";
     return n;
 }
-
-
-
-
-
 string readItemId() {
     string id;
     while (true) {
@@ -75,13 +56,11 @@ string readItemId() {
         id[i] = (char)toupper((unsigned char)id[i]);
     return id;
 }
-
 string tokenLabel(int token) {
     ostringstream o;
     o << "T" << setfill('0') << setw(3) << token;
     return o.str();
 }
-
 void loadMenu(bool verbose = false) {
     menu.clear();
     menuIndex.clear();
@@ -90,13 +69,7 @@ void loadMenu(bool verbose = false) {
     if (!file.is_open()) {
         cout << "WARNING: could not open " << inventoryPath << " (is the folder writable?).\n";
         return;
-    }
-
-
-
-
-
-    
+    } 
     string line;
     int skipped = 0;
     while (getline(file, line)) {
@@ -121,12 +94,10 @@ void loadMenu(bool verbose = false) {
     if (verbose && skipped > 0)
         cout << "WARNING: " << skipped << " line(s) in the inventory file could not be read and were skipped.\n";
 }
-
 void saveOrders() {
     vector<int> tokens;
     for (auto& p : allOrders) tokens.push_back(p.first);
     sort(tokens.begin(), tokens.end());
-
     ofstream out(dataPath("orders.txt").c_str());
     if (!out.is_open()) {
         cout << "WARNING: could not save orders to disk.\n";
@@ -140,11 +111,6 @@ void saveOrders() {
         out << "\n";
     }
 }
-
-
-
-
-
 void loadOrders() {
     ifstream in(dataPath("orders.txt").c_str());
     if (!in.is_open()) return;
@@ -192,7 +158,6 @@ void loadOrders() {
     if (skipped > 0)
         cout << "WARNING: " << skipped << " saved order(s) could not be restored.\n";
 }
-
 void showFoodMenu() {
     loadMenu();                        
     cout << "\nMENU\n";
@@ -206,12 +171,6 @@ void showFoodMenu() {
         else cout << stock << "\n";
     }
 }
-
-
-
-
-
-
 void placeOrder() {
     loadMenu();
     if (menu.empty()) {
@@ -240,12 +199,10 @@ void placeOrder() {
         else
             cout << item->name << " is out of stock (or not enough left)\n";
     }
-
     if (order.lines.empty()) {
         cout << "Order cancelled\n";
         return;
     }
-
     vector<pair<string, int> > taken;
     bool ok = true;
     for (map<string, int>::iterator it = order.lines.begin(); it != order.lines.end(); it++) {
@@ -257,12 +214,6 @@ void placeOrder() {
         cout << "Could not update stock. Order cancelled.\n";
         return;
     }
-
-
-
-
-    
-   
     vector<OrderItem> items;
     for (map<string, int>::iterator it = order.lines.begin(); it != order.lines.end(); it++) {
         Item* mi = findItem(it->first);
@@ -289,11 +240,6 @@ void placeOrder() {
     cout << "Your token number: " << token << "\n";
     cout << "Estimated waiting time: " << chefQueue.waitingTime(token) << " minutes\n";
 }
-
-
-
-
-
 void startNext() {
     QueueOrder next;
     if (!chefQueue.processNextOrder(&next)) {
@@ -304,7 +250,6 @@ void startNext() {
     saveOrders();
     cout << "Token " << next.token << " is now being prepared\n";
 }
-
 void markReady() {
     int token = readNumber("Token number: ", 1, 999999);
     auto found = allOrders.find(token);
@@ -321,7 +266,6 @@ void markReady() {
     saveOrders();
     cout << "Token " << token << " is ready\n";
 }
-
 void markCompleted() {
     int token = readNumber("Token number: ", 1, 999999);
     auto found = allOrders.find(token);
@@ -336,11 +280,6 @@ void markCompleted() {
         cout << "Queue has no processing order with this token\n";
     }
 }
-
-
-
-
-
 void viewKitchenOrders() {
     const vector<QueueOrder>& list = chefQueue.processingOrders();
     if (list.empty()) {
@@ -356,7 +295,6 @@ void viewKitchenOrders() {
             cout << "     - " << list[i].items[k].quantity << " x " << list[i].items[k].name << "\n";
     }
 }
-
 void checkStatus() {
     int token = readNumber("Token number: ", 1, 999999);
     if (allOrders.count(token) == 0) {
@@ -369,11 +307,6 @@ void checkStatus() {
         cout << "Estimated waiting time: " << wait << " minutes\n";
     printBill(allOrders[token]);
 }
-
-
-
-
-
 void estimatedWait() {
     int token = readNumber("Token number: ", 1, 999999);
     auto found = allOrders.find(token);
@@ -391,14 +324,12 @@ void estimatedWait() {
     else
         cout << "This order is " << statusToString(s) << ".\n";
 }
-
 void changeStock() {
     string id = readItemId();
     if (id == "0") return;
     int change = readNumber("Change in stock (+ add, - remove): ", -10000, 10000);
     updateStock(id, change);
 }
-
 void adjustQuantity() {
     int token = readNumber("Token number: ", 1, 999999);
     auto found = allOrders.find(token);
@@ -412,13 +343,7 @@ void adjustQuantity() {
              << statusToString(order.status) << ")\n";
         return;
     }
-
-
-
-
-    
     printBill(order);
-
     string id = readItemId();
     if (id == "0") return;
     Item* item = findItem(id);
@@ -446,12 +371,6 @@ void adjustQuantity() {
     cout << "Order updated\n";
     printBill(order);
 }
-
-
-
-
-
-
 void cancelWholeOrder() {
     int token = readNumber("Token number: ", 1, 999999);
     auto found = allOrders.find(token);
@@ -475,13 +394,11 @@ void cancelWholeOrder() {
     saveOrders();
     cout << "Token " << token << " cancelled and stock returned\n";
 }
-
 int main(int argc, char* argv[]) {
     locateInventory(argc > 0 ? argv[0] : "");
     loadMenu(true);
     loadOrders();
     cout << "Using inventory file: " << inventoryPath << "\n";
-
     int choice;
     do {
         cout << "\nSMART CANTEEN OPTIMIZER\n"
@@ -499,11 +416,6 @@ int main(int argc, char* argv[]) {
              << "12. View orders being prepared / ready (chef)\n"
              << " 0. Exit\n";
         choice = readNumber("Choice: ", 0, 12);
-
-
-
-        
-
         if (choice == 1) showFoodMenu();
         else if (choice == 2) placeOrder();
         else if (choice == 3) chefQueue.viewPendingOrders();
@@ -517,7 +429,6 @@ int main(int argc, char* argv[]) {
         else if (choice == 11) cancelWholeOrder();
         else if (choice == 12) viewKitchenOrders();
     } while (choice != 0);
-
     cout << "Goodbye!\n";
     return 0;
 }
